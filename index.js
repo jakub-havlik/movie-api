@@ -60,7 +60,11 @@ app.get('/movies', (req, res) => {
   res.json(topMovies);
 });
 
-app.use('/documentation.html', express.static('public'));
+//app.use('/documentation', express.static('public'));
+
+app.get('/documentation', (req, res) => {
+  res.status(200).sendFile(`${__dirname}/public/documentation.html`);
+});
 
 app.use(morgan('common'));
 
