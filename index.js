@@ -208,7 +208,7 @@ app.delete("/users/:id", (req, res) =>{
 
  if(user) {
    users = users.filter(user => user.id != id)
-   res.status(200).send("user " + id + " has been deleted");
+   res.status(200).send(`user ${id} has been deleted`);
  } else {
    res.status(400).send("no such user")
  }
