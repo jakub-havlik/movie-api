@@ -42,16 +42,16 @@ favoriteMovies:["Black Dynamite"]
 
 let topMovies = [
   {
-    Title: "Berlin Alexanderplatz",
-    Genre: {
-      Name: "Drama",
-      Description:
+    title: "Berlin Alexanderplatz",
+    genre: {
+      name: "Drama",
+      description:
         "The drama genre features stories with high stakes and a lot of conflicts. They’re plot-driven and demand that every character and scene move the story forward. Dramas follow a clearly defined narrative plot structure, portraying real-life scenarios or extreme situations with emotionally-driven characters.",
     },
-    Director: {
-      Name: "Burhan Qurbani",
-      Bio: "Burhan Qurbani (Persian: برهان قربانی) (born in Erkelenz on 15 November 1980) is a German film director, writer and actor of Afghan origin. His directing, writing, and acting works include Shahada (2010), 20xBrandenburg (2010 TV documentary), and Illusion (2007 short film).[1] His modern day adaption of Alfred Döblin's modern classic novel Berlin Alexanderplatz was selected for the main competition of the 2020 Berlin International Film Festival.[2]",
-      Birth: "1980",
+    director: {
+      name: "Burhan Qurbani",
+      bio: "Burhan Qurbani (Persian: برهان قربانی) (born in Erkelenz on 15 November 1980) is a German film director, writer and actor of Afghan origin. His directing, writing, and acting works include Shahada (2010), 20xBrandenburg (2010 TV documentary), and Illusion (2007 short film).[1] His modern day adaption of Alfred Döblin's modern classic novel Berlin Alexanderplatz was selected for the main competition of the 2020 Berlin International Film Festival.[2]",
+      birth: "1980",
     },
     imgURL: ""
   },
@@ -102,7 +102,7 @@ app.get("/movies", (req, res) => {
 //GET route located at the endpoint "/movies/title" which returns a json object with a single movie
 app.get("/movies/:title", (req, res) => {
   const { title } = req.params; //object destructering, creatinga a variable assigning it to the url requested title
-  const movie = topMovies.find((movie) => movie.Title === title); //find method that sits on an array which takes a function as a parameter
+  const movie = topMovies.find((movie) => movie.title === title); //find method that sits on an array which takes a function as a parameter
 
   if (movie) {
     res.status(200).json(movie);
@@ -115,7 +115,7 @@ app.get("/movies/:title", (req, res) => {
 //GET route located at the endpoint "/movies/title" which returns a json object with a single movie
 app.get("/movies/genre/:genreName", (req, res) => {
   const { genreName } = req.params; //object destructering, creatinga a variable assigning it to the url requested title
-  const genre = topMovies.find((movie) => movie.Genre.Name === genreName).Genre; //find method that sits on an array which takes a function as a parameter. Very important to add".Genre" at the end. It will only return us the Genre object
+  const genre = topMovies.find((movie) => movie.genre.name === genreName).genre; //find method that sits on an array which takes a function as a parameter. Very important to add".Genre" at the end. It will only return us the Genre object
 
   if (genre) {
     res.status(200).json(genre);
@@ -127,7 +127,7 @@ app.get("/movies/genre/:genreName", (req, res) => {
 //GET route located at the endpoint "/movies/title" which returns a json object with a single movie
 app.get("/movies/directors/:directorName", (req, res) => {
   const { directorName } = req.params; //object destructering, creatinga a variable assigning it to the url requested title
-  const director = topMovies.find((movie) => movie.Director.Name === directorName).Director; //find method that sits on an array which takes a function as a parameter. Very important to add".Genre" at the end. It will only return us the Genre object
+  const director = topMovies.find((movie) => movie.director.name === directorName).director; //find method that sits on an array which takes a function as a parameter. Very important to add".Genre" at the end. It will only return us the Genre object
 
   if (director) {
     res.status(200).json(director);
@@ -216,7 +216,6 @@ app.delete("/users/:id", (req, res) =>{
 })
 
 
-//-------------------------------------------------------//
 
 //GET request to display message in the browser upon entering "localhost:8080" in the browser
 app.get("/", (req, res) => {
