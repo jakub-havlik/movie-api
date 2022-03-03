@@ -22,13 +22,33 @@ mongoose.connect('mongodb://localhost:27017/myFlixDB', { useNewUrlParser: true, 
 //it allows you to read the “body” of HTTP requests within your request handlers simply by using the code req.body.
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-//invokes middle ware function with "common" parameters using the default format
+
+//import auth.js into the project
+let auth = require('./auth')(app); //passing the "app" argument ensures that Express is available in my "auth.js" file as well
+//import the "passport.js" file
+//require the Passport module
+const passport = require('passport');
+require('./passport');
+
+//invokes middleware function with "common" parameters using the default format
 app.use(morgan("common"));
 
 
 
 //-----------------------------------------------------------//
 
+
+
+//defining http message codes
+const {INTERNAL_SERVER_ERROR, NOT_FOUND, BAD_REQUEST, UNAUTHORIZED, FORBIDDEN, OK, CREATED} = {
+  "INTERNAL_SERVER_ERROR": 500,
+  "NOT_FOUND": 404,
+  "BAD_REQUEST": 400,
+  "UNAUTHORIZED": 401,
+  "FORBIDDEN": 403,
+  "OK": 200,
+  "CREATED": 201
+}
 
 // --ENDPOINTS--
 
@@ -42,11 +62,12 @@ app.get("/", (req, res) => {
 
 
 // 1. Return a list of ALL movies to the user
+// *will require a JWT token from the client
 
-app.get("/movies", (req, res) => {
+app.get("/movies", passport.authenticate('jwt', { session: false }), (req, res) => {
   Movies.find()
     .then((movies) => {
-      res.status(201).json(movies);
+      res.status(OK).json(movies);
     })
     .catch((err) => {
       console.error(err);
@@ -57,11 +78,16 @@ app.get("/movies", (req, res) => {
 
 
 // 2. Return data about a single movie by title to the user
+// *will require a JWT token from the client
 
-app.get("/movies/:Title", (req, res) => {
+app.get("/movies/:Title", passport.authenticate('jwt', { session: false }), (req, res) => {
   Movies.findOne({ Title: req.params.Title})
     .then((movie) => {
-      res.json(movie);
+      if (movie) {
+        res.json(movie)
+      } else {
+        res.status(NOT_FOUND).send("Movie not found");
+      }
     })
     .catch((err) => {
       console.error(err);
@@ -73,7 +99,7 @@ app.get("/movies/:Title", (req, res) => {
 
 // 3. Return data about a genre by title
 
-app.get("/genre/:Name", (req, res) => {
+app.get("/genre/:Name", passport.authenticate('jwt', { session: false }), (req, res) => {
   Movies.findOne( { "Genre.Name": req.params.Name })
     .then((movie) => {
       res.json(movie.Genre);
@@ -88,7 +114,7 @@ app.get("/genre/:Name", (req, res) => {
 
 // 4. Return data about a director by name
 
-app.get("/director/:Name", (req, res) => {
+app.get("/director/:Name", passport.authenticate('jwt', { session: false }), (req, res) => {
   Movies.findOne( { "Director.Name": req.params.Name })
     .then((movie) => {
       if (movie) {
@@ -108,7 +134,7 @@ app.get("/director/:Name", (req, res) => {
 // 5. Allow new users to register
 // -- We’ll expect JSON in this format
 
-app.post('/users', (req, res) => {
+app.post('/users', passport.authenticate('jwt', { session: false }), (req, res) => {
   Users.findOne({ Username: req.body.Username })
     .then((user) => {
       if (user) {
@@ -164,8 +190,9 @@ app.get('/users/:Username', (req, res) => {
 
 // 6. Allow users to update their info
 // -- We’ll expect JSON in this format
+// !! ATTENTION !! -- Make sure that the returned object (json) doesn't contain sensitive data such as passwords, etc....
 
-app.put('/users/:Username', (req, res) => {
+app.put('/users/:Username', passport.authenticate('jwt', { session: false }), (req, res) => {
   Users.findOneAndUpdate({ Username: req.params.Username }, { $set:
     {
       Username: req.body.Username,
@@ -179,8 +206,12 @@ app.put('/users/:Username', (req, res) => {
     if(err) {
       console.error(err);
       res.status(500).send('Error: ' + err);
-    } else {
-      res.json(updatedUser);
+    } else { // Return json without user's password
+      res.json({
+        Username: updatedUser.Username,
+        Email: updatedUser.Email,
+        Birthday: updatedUser.Birthday
+      });
     }
   });
 });
@@ -189,7 +220,7 @@ app.put('/users/:Username', (req, res) => {
 
 // 7. Allow users to add a movie to their list of favorites
 
-app.post('/users/:Username/movies/:MovieID', (req, res) => {
+app.post('/users/:Username/movies/:MovieID', passport.authenticate('jwt', { session: false }), (req, res) => {
   Users.findOneAndUpdate({ Username: req.params.Username }, {
      $push: { FavoriteMovies: req.params.MovieID }
    },
@@ -208,7 +239,7 @@ app.post('/users/:Username/movies/:MovieID', (req, res) => {
 
 // 8. Allow users to remove a movie from their list of favorites
 
-app.delete('/users/:Username/movies/:MovieID', (req, res) => {
+app.delete('/users/:Username/movies/:MovieID', passport.authenticate('jwt', { session: false }), (req, res) => {
   Users.findOneAndUpdate({ Username: req.params.Username }, {
      $pull: { FavoriteMovies: req.params.MovieID }
    },
@@ -227,7 +258,7 @@ app.delete('/users/:Username/movies/:MovieID', (req, res) => {
 
 // 9. Allow existing users to deregister
 
-app.delete('/users/:Username', (req, res) => {
+app.delete('/users/:Username', passport.authenticate('jwt', { session: false }), (req, res) => {
   Users.findOneAndRemove({ Username: req.params.Username })
     .then((user) => {
       if (!user) {
