@@ -134,7 +134,7 @@ app.get("/director/:Name", passport.authenticate('jwt', { session: false }), (re
 // 5. Allow new users to register
 // -- We’ll expect JSON in this format
 
-app.post('/users', passport.authenticate('jwt', { session: false }), (req, res) => {
+app.post('/users', (req, res) => {
   Users.findOne({ Username: req.body.Username })
     .then((user) => {
       if (user) {
@@ -160,9 +160,8 @@ app.post('/users', passport.authenticate('jwt', { session: false }), (req, res) 
     });
 });
 
-
 // *Test* Get all users
-app.get("/users", function (req, res) {
+app.get("/users", passport.authenticate('jwt', { session: false }), function (req, res) {
   Users.find()
     .then(function (users) {
       res.status(201).json(users);
@@ -173,9 +172,8 @@ app.get("/users", function (req, res) {
     });
 });
 
-
 // *Test* Get a user by username
-app.get('/users/:Username', (req, res) => {
+app.get('/users/:Username', passport.authenticate('jwt', { session: false }), (req, res) => {
   Users.findOne({ Username: req.params.Username })
     .then((user) => {
       res.json(user);
