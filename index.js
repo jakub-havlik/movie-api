@@ -16,7 +16,16 @@ const Directors = Models.Director;
 
 //integration between my REST API and my database
 //allowing Mongoose to connect to the database to perform CRUD on the documents it contains from within my REST API
-mongoose.connect('mongodb://localhost:27017/myFlixDB', { useNewUrlParser: true, useUnifiedTopology: true });
+//mongoose.connect('mongodb://localhost:27017/myFlixDB', { useNewUrlParser: true, useUnifiedTopology: true });
+
+//mongoose.connect('mongodb+srv://Nine-Chairs:Trabalhonovo2022@nine-chairs-cluster-no1.tn0lr.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
+
+
+mongoose.connect( process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+
+
+
+
 
 //invokes the middleware module body-parser.
 //it allows you to read the “body” of HTTP requests within your request handlers simply by using the code req.body.
