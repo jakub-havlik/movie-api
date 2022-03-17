@@ -18,7 +18,7 @@ const Directors = Models.Director;
 //allowing Mongoose to connect to the database to perform CRUD on the documents it contains from within my REST API
 //mongoose.connect('mongodb://localhost:27017/myFlixDB', { useNewUrlParser: true, useUnifiedTopology: true });
 
-//mongoose.connect('mongodb+srv://Nine-Chairs:Trabalhonovo2022@nine-chairs-cluster-no1.tn0lr.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
+//mongoose.connect('mongodb+srv://Nine-Chairs:Trabalhonovo2022@nine-chairs-cluster-no1.tn0lr.mongodb.net/myFlixDB?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
 
 
 mongoose.connect( process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
