@@ -13,10 +13,6 @@ const Movies = Models.Movie;
 const Users = Models.User;
 
 
-//const Genres = Models.Genre;
-//const Directors = Models.Director;
-
-
 // integration between my REST API and my database
 // allowing Mongoose to connect to the database to perform CRUD on the documents it contains from within my REST API
 
@@ -28,9 +24,6 @@ const Users = Models.User;
 
 //Config Vars in Heroku (so that the password is not shown in the code) (as in the link above...)
 mongoose.connect( process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
-
-
-
 
 
 //invokes the middleware module body-parser.
