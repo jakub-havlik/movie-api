@@ -1,6 +1,6 @@
 // auth.js file creates a new login endpoint
 
-const jwtSecret = 'your_jwt_secret'; // This has to be the same key used in the JWTStrategy
+const jwtSecret = '$velmi&tajne*heslo!'; // This has to be the same key used in the JWTStrategy
 
 const jwt = require('jsonwebtoken'),
   passport = require('passport');
