@@ -11,16 +11,22 @@ const Models = require('./models.js');
 //refering to the model names in models.js file
 const Movies = Models.Movie;
 const Users = Models.User;
-const Genres = Models.Genre;
-const Directors = Models.Director;
 
-//integration between my REST API and my database
-//allowing Mongoose to connect to the database to perform CRUD on the documents it contains from within my REST API
+
+//const Genres = Models.Genre;
+//const Directors = Models.Director;
+
+
+// integration between my REST API and my database
+// allowing Mongoose to connect to the database to perform CRUD on the documents it contains from within my REST API
+
+//connecting to MongoDB locally (on my PC)
 //mongoose.connect('mongodb://localhost:27017/myFlixDB', { useNewUrlParser: true, useUnifiedTopology: true });
 
+//connecting to MongoDB (link copied from MongoDB Atlas)
 //mongoose.connect('mongodb+srv://Nine-Chairs:Trabalhonovo2022@nine-chairs-cluster-no1.tn0lr.mongodb.net/myFlixDB?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
 
-
+//Config Vars in Heroku (so that the password is not shown in the code) (as in the link above...)
 mongoose.connect( process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 
@@ -69,12 +75,13 @@ app.use(morgan("common"));
 
 
 //defining http message codes
-const {INTERNAL_SERVER_ERROR, NOT_FOUND, BAD_REQUEST, UNAUTHORIZED, FORBIDDEN, OK, CREATED} = {
+const {INTERNAL_SERVER_ERROR, NOT_FOUND, BAD_REQUEST, UNAUTHORIZED, FORBIDDEN, UNPROCESSABLE_ENTITY, OK, CREATED} = {
   "INTERNAL_SERVER_ERROR": 500,
   "NOT_FOUND": 404,
   "BAD_REQUEST": 400,
   "UNAUTHORIZED": 401,
   "FORBIDDEN": 403,
+  "UNPROCESSABLE_ENTITY": 422,
   "OK": 200,
   "CREATED": 201
 }
@@ -100,7 +107,7 @@ app.get("/movies", passport.authenticate('jwt', { session: false }), (req, res) 
     })
     .catch((err) => {
       console.error(err);
-      res.status(500).send("Error: " + err);
+      res.status(INTERNAL_SERVER_ERROR).send("Error: " + err);
     });
 });
 
@@ -120,7 +127,7 @@ app.get("/movies/:Title", passport.authenticate('jwt', { session: false }), (req
     })
     .catch((err) => {
       console.error(err);
-      res.status(500).send("Error: " + err);
+      res.status(INTERNAL_SERVER_ERROR).send("Error: " + err);
     });
 });
 
@@ -135,7 +142,7 @@ app.get("/genre/:Name", passport.authenticate('jwt', { session: false }), (req, 
     })
     .catch((err) => {
       console.error(err);
-      res.status(500).send("Error: " + err);
+      res.status(INTERNAL_SERVER_ERROR).send("Error: " + err);
     });
 });
 
@@ -149,12 +156,12 @@ app.get("/director/:Name", passport.authenticate('jwt', { session: false }), (re
       if (movie) {
         res.json(movie.Director);
       } else {
-        res.status(404).send("Director not found");
+        res.status(NOT_FOUND).send("Director not found");
       }
     })
     .catch((err) => {
       console.error(err);
-      res.status(500).send("Error: " + err);
+      res.status(INTERNAL_SERVER_ERROR).send("Error: " + err);
     });
 });
 
@@ -180,7 +187,7 @@ app.post('/users',
     let errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      return res.status(422).json({ errors: errors.array() });
+      return res.status(UNPROCESSABLE_ENTITY).json({ errors: errors.array() });
     }
 
     let hashedPassword = Users.hashPassword(req.body.Password);
@@ -188,7 +195,7 @@ app.post('/users',
       .then((user) => {
         if (user) {
           //If the user is found, send a response that it already exists
-          return res.status(400).send(req.body.Username + ' already exists');
+          return res.status(BAD_REQUEST).send(req.body.Username + ' already exists');
         } else {
           Users
             .create({
@@ -197,16 +204,16 @@ app.post('/users',
               Email: req.body.Email,
               Birthday: req.body.Birthday
             })
-            .then((user) => { res.status(201).json(user) })
+            .then((user) => { res.status(CREATED).json(user) })
             .catch((error) => {
               console.error(error);
-              res.status(500).send('Error: ' + error);
+              res.status(INTERNAL_SERVER_ERROR).send('Error: ' + error);
             });
         }
       })
       .catch((error) => {
         console.error(error);
-        res.status(500).send('Error: ' + error);
+        res.status(INTERNAL_SERVER_ERROR).send('Error: ' + error);
       });
   });
 
@@ -214,11 +221,11 @@ app.post('/users',
 app.get("/users", passport.authenticate('jwt', { session: false }), function (req, res) {
   Users.find()
     .then(function (users) {
-      res.status(201).json(users);
+      res.status(CREATED).json(users);
     })
     .catch(function (err) {
       console.error(err);
-      res.status(500).send("Error: " + err);
+      res.status(INTERNAL_SERVER_ERROR).send("Error: " + err);
     });
 });
 
@@ -230,7 +237,7 @@ app.get('/users/:Username', passport.authenticate('jwt', { session: false }), (r
     })
     .catch((err) => {
       console.error(err);
-      res.status(500).send('Error: ' + err);
+      res.status(INTERNAL_SERVER_ERROR).send('Error: ' + err);
     });
 });
 
@@ -253,7 +260,7 @@ app.put('/users/:Username', passport.authenticate('jwt', { session: false }), (r
   (err, updatedUser) => {
     if(err) {
       console.error(err);
-      res.status(500).send('Error: ' + err);
+      res.status(INTERNAL_SERVER_ERROR).send('Error: ' + err);
     } else { // Return json without user's password
       res.json({
         Username: updatedUser.Username,
@@ -276,7 +283,7 @@ app.post('/users/:Username/movies/:MovieID', passport.authenticate('jwt', { sess
   (err, updatedUser) => {
     if (err) {
       console.error(err);
-      res.status(500).send('Error: ' + err);
+      res.status(INTERNAL_SERVER_ERROR).send('Error: ' + err);
     } else {
       res.json(updatedUser);
     }
@@ -295,7 +302,7 @@ app.delete('/users/:Username/movies/:MovieID', passport.authenticate('jwt', { se
   (err, updatedUser) => {
     if (err) {
       console.error(err);
-      res.status(500).send('Error: ' + err);
+      res.status(INTERNAL_SERVER_ERROR).send('Error: ' + err);
     } else {
       res.json(updatedUser);
     }
@@ -310,14 +317,14 @@ app.delete('/users/:Username', passport.authenticate('jwt', { session: false }),
   Users.findOneAndRemove({ Username: req.params.Username })
     .then((user) => {
       if (!user) {
-        res.status(400).send(req.params.Username + ' was not found');
+        res.status(BAD_REQUEST).send(req.params.Username + ' was not found');
       } else {
-        res.status(200).send(req.params.Username + ' was deleted.');
+        res.status(OK).send(req.params.Username + ' was deleted.');
       }
     })
     .catch((err) => {
       console.error(err);
-      res.status(500).send('Error: ' + err);
+      res.status(INTERNAL_SERVER_ERROR).send('Error: ' + err);
     });
 });
 
@@ -354,5 +361,5 @@ app.use(myLogger);
 //setting the error handler in express(always put it last in line)
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).send("Error!");
+  res.status(INTERNAL_SERVER_ERROR).send("Error!");
 });
