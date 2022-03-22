@@ -19,10 +19,9 @@ const Users = Models.User;
 //connecting to MongoDB locally (on my PC)
 //mongoose.connect('mongodb://localhost:27017/myFlixDB', { useNewUrlParser: true, useUnifiedTopology: true });
 
-//connecting to MongoDB (link copied from MongoDB Atlas)
-//mongoose.connect('mongodb+srv://Nine-Chairs:Trabalhonovo2022@nine-chairs-cluster-no1.tn0lr.mongodb.net/myFlixDB?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
+//connecting to MongoDB (via link copied from MongoDB Atlas)
 
-//Config Vars in Heroku (so that the password is not shown in the code) (as in the link above...)
+//Config Vars in Heroku (so that the password is not shown in the code) (as it was in the link above...)
 mongoose.connect( process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 
