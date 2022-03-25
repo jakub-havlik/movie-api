@@ -92,7 +92,7 @@ app.get("/", (req, res) => {
 // 1. Return a list of ALL movies to the user
 // *will require a JWT token from the client
 
-app.get("/movies", passport.authenticate('jwt', { session: false }), (req, res) => {
+app.get("/movies", (req, res) => {
   Movies.find()
     .then((movies) => {
       res.status(OK).json(movies);
