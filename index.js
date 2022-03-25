@@ -33,7 +33,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //require CORS (Cross-Origin Resource Sharing)
 const cors = require('cors');
 //create a list of allowed origins
-let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];
+let allowedOrigins = ['http://localhost:8080', 'http://testsite.com', 'http://localhost:1234'];
 app.use(cors({
   origin: (origin, callback) => {
     if(!origin) return callback(null, true);
