@@ -22,7 +22,7 @@ const Users = Models.User;
 //connecting to MongoDB (via link copied from MongoDB Atlas)
 
 //Config Vars in Heroku (so that the password is not shown in the code) (as it was in the link above...)
-mongoose.connect( process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 
 //invokes the middleware module body-parser.
@@ -36,10 +36,10 @@ const cors = require('cors');
 let allowedOrigins = ['http://localhost:8080', 'http://testsite.com', 'http://localhost:1234'];
 app.use(cors({
   origin: (origin, callback) => {
-    if(!origin) return callback(null, true);
-    if(allowedOrigins.indexOf(origin) === -1){ // If a specific origin isn’t found on the list of allowed origins
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) { // If a specific origin isn’t found on the list of allowed origins
       let message = 'The CORS policy for this application doesn’t allow access from origin ' + origin;
-      return callback(new Error(message ), false);
+      return callback(new Error(message), false);
     }
     return callback(null, true);
   }
@@ -67,7 +67,7 @@ app.use(morgan("common"));
 
 
 //defining http message codes
-const {INTERNAL_SERVER_ERROR, NOT_FOUND, BAD_REQUEST, UNAUTHORIZED, FORBIDDEN, UNPROCESSABLE_ENTITY, OK, CREATED} = {
+const { INTERNAL_SERVER_ERROR, NOT_FOUND, BAD_REQUEST, UNAUTHORIZED, FORBIDDEN, UNPROCESSABLE_ENTITY, OK, CREATED } = {
   "INTERNAL_SERVER_ERROR": 500,
   "NOT_FOUND": 404,
   "BAD_REQUEST": 400,
@@ -92,7 +92,7 @@ app.get("/", (req, res) => {
 // 1. Return a list of ALL movies to the user
 // *will require a JWT token from the client
 
-app.get("/movies", (req, res) => {
+app.get("/movies", passport.authenticate('jwt', { session: false }), (req, res) => {
   Movies.find()
     .then((movies) => {
       res.status(OK).json(movies);
@@ -109,7 +109,7 @@ app.get("/movies", (req, res) => {
 // *will require a JWT token from the client
 
 app.get("/movies/:Title", passport.authenticate('jwt', { session: false }), (req, res) => {
-  Movies.findOne({ Title: req.params.Title})
+  Movies.findOne({ Title: req.params.Title })
     .then((movie) => {
       if (movie) {
         res.json(movie)
@@ -128,7 +128,7 @@ app.get("/movies/:Title", passport.authenticate('jwt', { session: false }), (req
 // 3. Return data about a genre by title
 
 app.get("/genre/:Name", passport.authenticate('jwt', { session: false }), (req, res) => {
-  Movies.findOne( { "Genre.Name": req.params.Name })
+  Movies.findOne({ "Genre.Name": req.params.Name })
     .then((movie) => {
       res.json(movie.Genre);
     })
@@ -143,7 +143,7 @@ app.get("/genre/:Name", passport.authenticate('jwt', { session: false }), (req, 
 // 4. Return data about a director by name
 
 app.get("/director/:Name", passport.authenticate('jwt', { session: false }), (req, res) => {
-  Movies.findOne( { "Director.Name": req.params.Name })
+  Movies.findOne({ "Director.Name": req.params.Name })
     .then((movie) => {
       if (movie) {
         res.json(movie.Director);
@@ -169,13 +169,13 @@ app.post('/users',
   //or use .isLength({min: 5}) which means
   //minimum value of 5 characters are only allowed
   [
-    check('Username', 'Username is required').isLength({min: 5}),
+    check('Username', 'Username is required').isLength({ min: 5 }),
     check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
     check('Password', 'Password is required').not().isEmpty(),
     check('Email', 'Email does not appear to be valid').isEmail()
   ], (req, res) => {
 
-  // check the validation object for errors
+    // check the validation object for errors
     let errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -240,7 +240,8 @@ app.get('/users/:Username', passport.authenticate('jwt', { session: false }), (r
 // !! ATTENTION !! -- Make sure that the returned object (json) doesn't contain sensitive data such as passwords, etc....
 
 app.put('/users/:Username', passport.authenticate('jwt', { session: false }), (req, res) => {
-  Users.findOneAndUpdate({ Username: req.params.Username }, { $set:
+  Users.findOneAndUpdate({ Username: req.params.Username }, {
+    $set:
     {
       Username: req.body.Username,
       Password: req.body.Password,
@@ -248,19 +249,19 @@ app.put('/users/:Username', passport.authenticate('jwt', { session: false }), (r
       Birthday: req.body.Birthday
     }
   },
-  { new: true }, // This line makes sure that the updated document is returned
-  (err, updatedUser) => {
-    if(err) {
-      console.error(err);
-      res.status(INTERNAL_SERVER_ERROR).send('Error: ' + err);
-    } else { // Return json without user's password
-      res.json({
-        Username: updatedUser.Username,
-        Email: updatedUser.Email,
-        Birthday: updatedUser.Birthday
-      });
-    }
-  });
+    { new: true }, // This line makes sure that the updated document is returned
+    (err, updatedUser) => {
+      if (err) {
+        console.error(err);
+        res.status(INTERNAL_SERVER_ERROR).send('Error: ' + err);
+      } else { // Return json without user's password
+        res.json({
+          Username: updatedUser.Username,
+          Email: updatedUser.Email,
+          Birthday: updatedUser.Birthday
+        });
+      }
+    });
 });
 
 
@@ -269,17 +270,17 @@ app.put('/users/:Username', passport.authenticate('jwt', { session: false }), (r
 
 app.post('/users/:Username/movies/:MovieID', passport.authenticate('jwt', { session: false }), (req, res) => {
   Users.findOneAndUpdate({ Username: req.params.Username }, {
-     $push: { FavoriteMovies: req.params.MovieID }
-   },
-   { new: true }, // This line makes sure that the updated document is returned
-  (err, updatedUser) => {
-    if (err) {
-      console.error(err);
-      res.status(INTERNAL_SERVER_ERROR).send('Error: ' + err);
-    } else {
-      res.json(updatedUser);
-    }
-  });
+    $push: { FavoriteMovies: req.params.MovieID }
+  },
+    { new: true }, // This line makes sure that the updated document is returned
+    (err, updatedUser) => {
+      if (err) {
+        console.error(err);
+        res.status(INTERNAL_SERVER_ERROR).send('Error: ' + err);
+      } else {
+        res.json(updatedUser);
+      }
+    });
 });
 
 
@@ -288,17 +289,17 @@ app.post('/users/:Username/movies/:MovieID', passport.authenticate('jwt', { sess
 
 app.delete('/users/:Username/movies/:MovieID', passport.authenticate('jwt', { session: false }), (req, res) => {
   Users.findOneAndUpdate({ Username: req.params.Username }, {
-     $pull: { FavoriteMovies: req.params.MovieID }
-   },
-   { new: true }, // This line makes sure that the updated document is returned
-  (err, updatedUser) => {
-    if (err) {
-      console.error(err);
-      res.status(INTERNAL_SERVER_ERROR).send('Error: ' + err);
-    } else {
-      res.json(updatedUser);
-    }
-  });
+    $pull: { FavoriteMovies: req.params.MovieID }
+  },
+    { new: true }, // This line makes sure that the updated document is returned
+    (err, updatedUser) => {
+      if (err) {
+        console.error(err);
+        res.status(INTERNAL_SERVER_ERROR).send('Error: ' + err);
+      } else {
+        res.json(updatedUser);
+      }
+    });
 });
 
 
@@ -336,8 +337,8 @@ app.get("/", (req, res) => {
 // !!
 // SETTING UP THE SERVER
 const port = process.env.PORT || 8080;
-app.listen(port, '0.0.0.0',() => {
- console.log('Listening on Port ' + port);
+app.listen(port, '0.0.0.0', () => {
+  console.log('Listening on Port ' + port);
 });
 
 //express function that automatically routes all requests for static files to their corresponding files in the "public" folder
