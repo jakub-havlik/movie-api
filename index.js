@@ -34,7 +34,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const cors = require('cors');
 //create a list of allowed origins
 let allowedOrigins = ['http://localhost:8080', 'http://testsite.com', 'http://localhost:1234',
-  'https://www.filmposter-archiv.de/filmplakat/2020/berlin-alexanderplatz.jpg',
+  'https://user-images.githubusercontent.com/94987154/165358863-83c5c25b-68c7-41b5-84ed-4fa5055f3a0d.jpg',
   'https://www.critic.de/images/ich-bin-dein-mensch-poster-2-24844.jpg'];
 app.use(cors({
   origin: (origin, callback) => {
