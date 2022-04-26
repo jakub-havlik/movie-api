@@ -33,7 +33,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //require CORS (Cross-Origin Resource Sharing)
 const cors = require('cors');
 //create a list of allowed origins
-let allowedOrigins = ['http://localhost:8080', 'http://testsite.com', 'http://localhost:1234'];
+let allowedOrigins = ['http://localhost:8080', 'http://testsite.com', 'http://localhost:1234',
+  'https://www.filmposter-archiv.de/filmplakat/2020/berlin-alexanderplatz.jpg',
+  'https://www.critic.de/images/ich-bin-dein-mensch-poster-2-24844.jpg'];
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
