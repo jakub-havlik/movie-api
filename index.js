@@ -35,7 +35,10 @@ const cors = require('cors');
 //create a list of allowed origins
 let allowedOrigins = ['http://localhost:8080', 'http://testsite.com', 'http://localhost:1234',
   'https://user-images.githubusercontent.com/94987154/165358863-83c5c25b-68c7-41b5-84ed-4fa5055f3a0d.jpg',
-  'https://www.critic.de/images/ich-bin-dein-mensch-poster-2-24844.jpg'];
+  'https://user-images.githubusercontent.com/94987154/165768471-39cd697f-1b36-4846-89be-1be61405c750.jpg',
+  'https://user-images.githubusercontent.com/94987154/165769849-1a558d21-6dbc-46e3-bbfe-541f316543c8.jpg',
+  'https://user-images.githubusercontent.com/94987154/165767647-1f722a26-d9c3-4c7e-b94f-66ceb2fd8d57.jpg',
+];
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
