@@ -32,16 +32,17 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 //require CORS (Cross-Origin Resource Sharing)
 const cors = require('cors');
-app.use(cors());
+//app.use(cors());
+
 //create a list of allowed origins
-/*let allowedOrigins = ['http://localhost:8080', 'http://testsite.com', 'http://localhost:1234',
-  'https://user-images.githubusercontent.com/94987154/165358863-83c5c25b-68c7-41b5-84ed-4fa5055f3a0d.jpg',
+let allowedOrigins = ['http://localhost:8080', 'http://testsite.com', 'http://localhost:1234',
+  'https://www.filmposter-archiv.de/filmplakat/2020/berlin-alexanderplatz.jpg',
   'https://user-images.githubusercontent.com/94987154/165768471-39cd697f-1b36-4846-89be-1be61405c750.jpg',
   'https://user-images.githubusercontent.com/94987154/165769849-1a558d21-6dbc-46e3-bbfe-541f316543c8.jpg',
   'https://user-images.githubusercontent.com/94987154/165767647-1f722a26-d9c3-4c7e-b94f-66ceb2fd8d57.jpg',
-];*/
+];
 
-/*app.use(cors({
+app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
     if (allowedOrigins.indexOf(origin) === -1) { // If a specific origin isn’t found on the list of allowed origins
@@ -50,7 +51,7 @@ app.use(cors());
     }
     return callback(null, true);
   }
-}));*/
+}));
 
 //import auth.js into the project
 let auth = require('./auth')(app); //passing the "app" argument ensures that Express is available in my "auth.js" file as well
