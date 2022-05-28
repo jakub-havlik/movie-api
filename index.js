@@ -247,30 +247,43 @@ app.get('/users/:Username', passport.authenticate('jwt', { session: false }), (r
 // -- We’ll expect JSON in this format
 // !! ATTENTION !! -- Make sure that the returned object (json) doesn't contain sensitive data such as passwords, etc....
 
-app.put('/users/:Username', passport.authenticate('jwt', { session: false }), (req, res) => {
-  Users.findOneAndUpdate({ Username: req.params.Username }, {
-    $set:
-    {
-      Username: req.body.Username,
-      Password: req.body.Password,
-      Email: req.body.Email,
-      Birthday: req.body.Birthday
+app.put('/users/:Username', passport.authenticate('jwt', { session: false }),
+  // Validation logic
+  [
+    check('Username', 'Username is required (min 3 characters).').isLength({ min: 3 }),
+    check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric()
+  ], (req, res) => {
+    // Check validation object for errors
+    let errors = validationResult(req);
+    let hashedPassword = undefined;
+
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
     }
-  },
-    { new: true }, // This line makes sure that the updated document is returned
-    (err, updatedUser) => {
-      if (err) {
+
+    // If Password is given in request body, create hashedPassword from given Password
+    if (req.body.hasOwnProperty('Password')) {
+      hashedPassword = Users.hashPassword(req.body.Password);
+    }
+
+    Users.findOneAndUpdate({ Username: req.params.Username }, // Find user by existing username
+      {
+        $set: { // Info from request body that can be updated
+          Username: req.body.Username,
+          Password: hashedPassword, // Store only hashed password
+          Email: req.body.Email,
+          Birthday: req.body.Birthday
+        }
+      },
+      { new: true }) // Return the updated document
+      .then((updatedUser) => {
+        res.json(updatedUser); // Return json object of updatedUser
+      })
+      .catch((err) => {
         console.error(err);
         res.status(INTERNAL_SERVER_ERROR).send('Error: ' + err);
-      } else { // Return json without user's password
-        res.json({
-          Username: updatedUser.Username,
-          Email: updatedUser.Email,
-          Birthday: updatedUser.Birthday
-        });
-      }
-    });
-});
+      });
+  });
 
 
 
