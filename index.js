@@ -35,7 +35,7 @@ const cors = require('cors');
 //app.use(cors());
 
 //create a list of allowed origins
-let allowedOrigins = ['http://localhost:8080', 'http://testsite.com', 'http://localhost:1234', 'http://localhost:4200',
+let allowedOrigins = ['http://localhost:8080', 'http://testsite.com', 'http://localhost:1234', 'http://localhost:4200', 'https://nine-chairs.github.io',
   'https://www.filmposter-archiv.de/filmplakat/2020/berlin-alexanderplatz.jpg',
   'https://user-images.githubusercontent.com/94987154/165768471-39cd697f-1b36-4846-89be-1be61405c750.jpg',
   'https://user-images.githubusercontent.com/94987154/165769849-1a558d21-6dbc-46e3-bbfe-541f316543c8.jpg',
