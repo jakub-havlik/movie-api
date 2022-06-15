@@ -7,7 +7,11 @@ const jwt = require('jsonwebtoken'),
 
 require('./passport'); // Your local passport file
 
-
+/**
+ * creates JWT (expiring in 7 days, using HS256 algorithm to encode)
+ * @param {object} user 
+ * @returns user object, jwt, and additional information on token
+ */
 let generateJWTToken = (user) => {
   return jwt.sign(user, jwtSecret, {
     subject: user.Username, // This is the username you’re encoding in the JWT
@@ -18,6 +22,13 @@ let generateJWTToken = (user) => {
 
 
 /* POST login. */
+/**
+ * handles user login, generating a jwt upon login
+ * @function generateJWTToken
+ * @param {*} router 
+ * @returns user object with jwt
+ * @requires passport
+ */
 module.exports = (router) => {
   router.post('/login', (req, res) => {
     passport.authenticate('local', { session: false }, (error, user, info) => {
