@@ -67,12 +67,14 @@ require('./passport');
 const { check, validationResult } = require('express-validator');
 
 //invokes middleware function with "common" parameters using the default format
+/**
+ * Logs basic request data in terminal using Morgan middleware library
+ */
 app.use(morgan("common"));
 
 
 
 //-----------------------------------------------------------//
-
 
 
 //defining http message codes
@@ -87,11 +89,18 @@ const { INTERNAL_SERVER_ERROR, NOT_FOUND, BAD_REQUEST, UNAUTHORIZED, FORBIDDEN, 
   "CREATED": 201
 }
 
-// --ENDPOINTS--
+
+//-----------------------------------------------------------//
+
+
+// --ENDPOINT DEFINITIONS--
 
 
 // *Test* Get welcome text
-
+/**
+ * GET: Returns welcome message for '/' request URL
+ * @returns Welcome message
+ */
 app.get("/", (req, res) => {
   res.send("Welcome to myFlix app");
 });
@@ -100,7 +109,12 @@ app.get("/", (req, res) => {
 
 // 1. Return a list of ALL movies to the user
 // *will require a JWT token from the client
-
+/**
+ * GET: Returns a list of ALL movies to the user
+ * Request body: Bearer token
+ * @returns array of movie objects
+ * @requires passport
+ */
 app.get("/movies", passport.authenticate('jwt', { session: false }), (req, res) => {
   Movies.find()
     .then((movies) => {
@@ -116,7 +130,13 @@ app.get("/movies", passport.authenticate('jwt', { session: false }), (req, res) 
 
 // 2. Return data about a single movie by title to the user
 // *will require a JWT token from the client
-
+/**
+ * GET: Returns data (description, genre, director, image URL) about a single movie by title to the user
+ * Request body: Bearer token
+ * @param Title
+ * @returns movie object
+ * @requires passport
+ */
 app.get("/movies/:Title", passport.authenticate('jwt', { session: false }), (req, res) => {
   Movies.findOne({ Title: req.params.Title })
     .then((movie) => {
@@ -135,7 +155,13 @@ app.get("/movies/:Title", passport.authenticate('jwt', { session: false }), (req
 
 
 // 3. Return data about a genre by title
-
+/**
+ * GET: Returns data about a genre (description) by name (e.g., “Drama”)
+ * Request body: Bearer token
+ * @param Name (of genre)
+ * @returns genre object
+ * @requires passport
+ */
 app.get("/genre/:Name", passport.authenticate('jwt', { session: false }), (req, res) => {
   Movies.findOne({ "Genre.Name": req.params.Name })
     .then((movie) => {
@@ -150,7 +176,13 @@ app.get("/genre/:Name", passport.authenticate('jwt', { session: false }), (req, 
 
 
 // 4. Return data about a director by name
-
+/**
+ * GET: Returns data about a director (bio, birth year, death year) by name
+ * Request body: Bearer token
+ * @param Name (of director)
+ * @returns director object
+ * @requires passport
+ */
 app.get("/director/:Name", passport.authenticate('jwt', { session: false }), (req, res) => {
   Movies.findOne({ "Director.Name": req.params.Name })
     .then((movie) => {
@@ -170,7 +202,11 @@ app.get("/director/:Name", passport.authenticate('jwt', { session: false }), (re
 
 // 5. Allow new users to register
 // -- We’ll expect JSON in this format
-
+/**
+ * POST: Allows new users to register; Username, Password & Email are required fields!
+ * Request body: Bearer token, JSON with user information
+ * @returns user object
+ */
 app.post('/users',
   // Validation logic here for request
   //you can either use a chain of methods like .not().isEmpty()
@@ -219,6 +255,12 @@ app.post('/users',
   });
 
 // *Test* Get all users
+/** 
+ * GET: Returns a list of ALL users
+ * Request body: Bearer token
+ * @returns array of user objects
+ * @requires passport
+ */
 app.get("/users", passport.authenticate('jwt', { session: false }), function (req, res) {
   Users.find()
     .then(function (users) {
@@ -231,6 +273,13 @@ app.get("/users", passport.authenticate('jwt', { session: false }), function (re
 });
 
 // *Test* Get a user by username
+/**
+ * GET: Returns data on a single user (user object) by username
+ * Request body: Bearer token
+ * @param Username
+ * @returns user object
+ * @requires passport
+ */
 app.get('/users/:Username', passport.authenticate('jwt', { session: false }), (req, res) => {
   Users.findOne({ Username: req.params.Username })
     .then((user) => {
@@ -247,7 +296,13 @@ app.get('/users/:Username', passport.authenticate('jwt', { session: false }), (r
 // 6. Allow users to update their info
 // -- We’ll expect JSON in this format
 // !! ATTENTION !! -- Make sure that the returned object (json) doesn't contain sensitive data such as passwords, etc....
-
+/**
+ * PUT: Allow users to update their user info (find by username)
+ * Request body: Bearer token, updated user info
+ * @param Username
+ * @returns user object with updates
+ * @requires passport
+ */
 app.put('/users/:Username', passport.authenticate('jwt', { session: false }),
   // Validation logic
   [
@@ -289,7 +344,14 @@ app.put('/users/:Username', passport.authenticate('jwt', { session: false }),
 
 
 // 7. Allow users to add a movie to their list of favorites
-
+/**
+ * POST: Allows users to add a movie to their list of favorites
+ * Request body: Bearer token
+ * @param Username
+ * @param MovieID
+ * @returns user object
+ * @requires passport
+ */
 app.post('/users/:Username/movies/:MovieID', passport.authenticate('jwt', { session: false }), (req, res) => {
   Users.findOneAndUpdate({ Username: req.params.Username }, {
     $push: { FavoriteMovies: req.params.MovieID }
@@ -308,7 +370,14 @@ app.post('/users/:Username/movies/:MovieID', passport.authenticate('jwt', { sess
 
 
 // 8. Allow users to remove a movie from their list of favorites
-
+/**
+ * DELETE: Allows users to remove a movie from their list of favorites
+ * Request body: Bearer token
+ * @param Username
+ * @param MovieID
+ * @returns user object
+ * @requires passport
+ */
 app.delete('/users/:Username/movies/:MovieID', passport.authenticate('jwt', { session: false }), (req, res) => {
   Users.findOneAndUpdate({ Username: req.params.Username }, {
     $pull: { FavoriteMovies: req.params.MovieID }
@@ -327,7 +396,13 @@ app.delete('/users/:Username/movies/:MovieID', passport.authenticate('jwt', { se
 
 
 // 9. Allow existing users to deregister
-
+/**
+ * DELETE: Allows existing users to deregister
+ * Request body: Bearer token
+ * @param Username
+ * @returns success message
+ * @requires passport
+ */
 app.delete('/users/:Username', passport.authenticate('jwt', { session: false }), (req, res) => {
   Users.findOneAndRemove({ Username: req.params.Username })
     .then((user) => {
@@ -344,6 +419,8 @@ app.delete('/users/:Username', passport.authenticate('jwt', { session: false }),
 });
 
 
+// -- END OF ENDPOINT DEFINITIONS--
+
 
 //--------------------------------------------------------------------//
 
@@ -358,12 +435,18 @@ app.get("/", (req, res) => {
 
 // !!
 // SETTING UP THE SERVER
+/**
+ * defines port, listening to port 8080
+ */
 const port = process.env.PORT || 8080;
 app.listen(port, '0.0.0.0', () => {
   console.log('Listening on Port ' + port);
 });
 
 //express function that automatically routes all requests for static files to their corresponding files in the "public" folder
+/**
+ * Serves static content for the app from the 'public' directory
+ */
 app.use(express.static("public"));
 
 //Morgan middleware library that logs all request
@@ -374,6 +457,9 @@ let myLogger = (req, res, next) => {
 app.use(myLogger);
 
 //setting the error handler in express(always put it last in line)
+/**
+ * handles errors
+ */
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(INTERNAL_SERVER_ERROR).send("Error!");
