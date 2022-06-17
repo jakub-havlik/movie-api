@@ -9,7 +9,7 @@ A RESTful movie API combining express, nodejs , and mongodb on the server side, 
 
 
 
-### Key features
+## Key features
 
 It allows users to access a database to receive information on a collection of movies. The user can access data about the movies such
 as synopsis, directors´ biographies, and genre descriptions. Furthermore, the user can sign up, update personal information and save/delete favorite movies to/from his/her personal profile.
