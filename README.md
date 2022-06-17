@@ -1,3 +1,4 @@
+
 # movie-api
 
 
@@ -8,7 +9,7 @@ A RESTful movie API combining express, nodejs , and mongodb on the server side, 
 
 
 
-### What does it do?
+### Key features
 
 It allows users to access a database to receive information on a collection of movies. The user can access data about the movies such
 as synopsis, directors´ biographies, and genre descriptions. Furthermore, the user can sign up, update personal information and save/delete favorite movies to/from his/her personal profile.
@@ -22,18 +23,19 @@ as synopsis, directors´ biographies, and genre descriptions. Furthermore, the u
 git clone https://github.com/nine-chairs/movie_api.git
 ```
 
-3. install mongodb
+2. install mongodb
 ```bash
 npm install mongodb
 ```
 
-4. Connect with own MongoDB (local or external)
+3. Connect with own MongoDB (local or external)
 define CONNECTION_URI as environment variable, otherwise it will connect to mongodb://localhost:27017/test
 
-5. start the server
+4. start the server
 ```bash
 npm run start
 ```
+
 
 
 ### Technical Requirements
@@ -64,9 +66,8 @@ https://listapeli.herokuapp.com/documentation.html
 
 ### Installation of all dev dependencies and express middleware for development
 
-See the dependencies listed in the package.json:
+See the dependencies listed in the package.json file.
 
-__See the package.json file__
 
 
 ### Create and populate non-relational database MongoDB
@@ -78,11 +79,14 @@ __See the package.json file__
 * Add 10 documents to the "movies" collection (including embedded documents for the keys "genre" and "director").
 * In the "users" collection - consisting of 4 documents - references are used to store information about the user's favorite movies.
 
+
+
 ### Building models with Mongoose (Business Logic)
 
 Use Mongoose to build the Business Logic Layer linking the database from MongoDB to the server (and finally to the Web Browser).
 
 Process:
+
 * Installation of object model driver Mongoose
 * Installation of dependencies: jsonwebtoken (jwt), bcrypt
 * Configuring the schemata for the users and the movies collection
@@ -98,6 +102,7 @@ Process:
 ### Hosting on MongoDBAtlas (DBaaS) and HEROKU (PaaS)
 
 Process:
+
 * register with heroku, install toolbelt
 * change port
 * create Heroku app
