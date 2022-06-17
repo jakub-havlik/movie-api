@@ -370,32 +370,6 @@ app.post('/users/:Username/movies/:MovieID', passport.authenticate('jwt', { sess
 
 
 
-
-/**
- * GET: Returns a list of favorite movies from the user
- * Request body: Bearer token
- * @param Username
- * @returns array of favorite movies
- * @requires passport
- */
-app.get('/users/:Username/movies', passport.authenticate('jwt', { session: false }), (req, res) => {
-  Users.findOne({ Username: req.params.Username })
-    .then((user) => {
-      if (user) { // If a user with the corresponding username was found, return user info
-        res.status(200).json(user.FavoriteMovies);
-      } else {
-        res.status(400).send('Could not find favorite movies for this user');
-      };
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send('Error: ' + err);
-    });
-});
-
-
-
-
 // 8. Allow users to remove a movie from their list of favorites
 /**
  * DELETE: Allows users to remove a movie from their list of favorites
@@ -422,7 +396,32 @@ app.delete('/users/:Username/movies/:MovieID', passport.authenticate('jwt', { se
 
 
 
-// 9. Allow existing users to deregister
+// 9. Allows users to get a list of their favorite movies
+/**
+ * GET: Returns a list of favorite movies from the user
+ * Request body: Bearer token
+ * @param Username
+ * @returns array of favorite movies
+ * @requires passport
+ */
+app.get('/users/:Username/movies', passport.authenticate('jwt', { session: false }), (req, res) => {
+  Users.findOne({ Username: req.params.Username })
+    .then((user) => {
+      if (user) { // If a user with the corresponding username was found, return user info
+        res.status(OK).json(user.FavoriteMovies);
+      } else {
+        res.status(BAD_REQUEST).send('Could not find favorite movies for this user');
+      };
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
+});
+
+
+
+// 10. Allow existing users to deregister
 /**
  * DELETE: Allows existing users to deregister
  * Request body: Bearer token
